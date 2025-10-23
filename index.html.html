@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Евгений Шабанов | Senior менеджер маркетплейсов</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e40af;
+            --accent: #3b82f6;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #334155;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(180deg); }
+        }
+
+        .profile-section {
+            position: relative;
+            z-index: 2;
+        }
+
+        .profile-img {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 4px solid rgba(255,255,255,0.3);
+            margin: 0 auto 25px;
+            background: linear-gradient(45deg, var(--accent), var(--primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .location-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            min-height: 700px;
+        }
+
+        .sidebar {
+            background: var(--light);
+            padding: 35px;
+            border-right: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .skills-chart {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+            margin-bottom: 30px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .contact-info {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+            border: 1px solid #f1f5f9;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            padding: 12px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .contact-item:hover {
+            background: #f8fafc;
+            transform: translateX(8px);
+            border-color: #e2e8f0;
+        }
+
+        .content-area {
+            padding: 45px;
+            background: white;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 45px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px 25px;
+            border-radius: 18px;
+            text-align: center;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 15px 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .metric-card:hover::before {
+            opacity: 1;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(37, 99, 235, 0.3);
+        }
+
+        .metric-value {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 35px 0;
+        }
+
+        .achievement-card {
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 900px;
+            margin: 45px auto;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--primary), var(--accent));
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            background: white;
+            padding: 30px;
+            margin: 25px 0;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            width: calc(50% - 50px);
+            position: relative;
+            transition: all 0.4s ease;
+            border: 1px solid #f1f5f9;
+        }
+
+        .timeline-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .timeline-item:nth-child(odd) {
+            margin-left: 0;
+            margin-right: auto;
+        }
+
+        .timeline-item:nth-child(even) {
+            margin-left: auto;
+            margin-right: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            transform: translateY(-50%);
+            border: 4px solid white;
+            box-shadow: 0 0 0 3px var(--primary);
+        }
+
+        .timeline-item:nth-child(odd)::before {
+            right: -55px;
+        }
+
+        .timeline-item:nth-child(even)::before {
+            left: -55px;
+        }
+
+        .skill-bar {
+            margin: 18px 0;
+        }
+
+        .skill-name {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .skill-level {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 5px;
+            transition: width 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+            position: relative;
+        }
+
+        .skill-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 14px 32px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 25px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-download:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        .progress-ring {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+        }
+
+        .progress-ring-circle {
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline::before {
+                left: 30px;
+            }
+            
+            .timeline-item {
+                width: calc(100% - 80px);
+                margin-left: 80px !important;
+                margin-right: 0 !important;
+            }
+            
+            .timeline-item::before {
+                left: -55px !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 40px 20px;
+            }
+            
+            .content-area, .sidebar {
+                padding: 25px;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--dark);
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <div class="profile-section">
+                <div class="profile-img">
+                    <!-- Фото будет загружено через JavaScript -->
+                    <img src="file:///C:/Users/User/OneDrive/%D0%A0%D0%B0%D0%B1%D0%BE%D1%87%D0%B8%D0%B9%20%D1%81%D1%82%D0%BE%D0%BB/%D0%9D%D0%BE%D0%B2%D0%B0%D1%8F%20%D0%BF%D0%B0%D0%BF%D0%BA%D0%B0%20(3)/photo.jpg.webp" alt="Евгений Шабанов" id="profilePhoto" onerror="this.style.display='none'">
+                    <span id="photoPlaceholder">ЕШ</span>
+                </div>
+                <h1 style="font-size: 2.5em; margin-bottom: 10px;">Евгений Шабанов</h1>
+                <p style="font-size: 1.3em; opacity: 0.9; margin-bottom: 15px;">Senior менеджер маркетплейсов</p>
+                <div class="location-badge">
+                    <span>📍 Санкт-Петербург / Мурино</span>
+                </div>
+                <p style="opacity: 0.8; font-size: 1.1em; max-width: 600px; margin: 20px auto; line-height: 1.6;">
+                    Удаленная работа | 5+ лет опыта | Wildberries • OZON • Яндекс.Маркет
+                </p>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="skills-chart">
+                    <h3 class="section-title">Экспертиза</h3>
+                    <canvas id="skillsChart" width="320" height="220"></canvas>
+                </div>
+                
+                <div class="contact-info">
+                    <h3 class="section-title">Контакты</h3>
+                    <div class="contact-item" onclick="copyToClipboard('79992235769')">
+                        <span style="margin-right: 10px;">📱</span>
+                        <div>
+                            <div style="font-weight: 600;">+7 (999) 223-57-69</div>
+                            <div style="font-size: 0.85em; opacity: 0.7;">Телефон / WhatsApp</div>
+                        </div>
+                    </div>
+                    <div class="contact-item" onclick="copyToClipboard('denistinikov19@gmail.com')">
+                        <span style="margin-right: 10px;">✉️</span>
+                        <div>
+                            <div style="font-weight: 600;">denistinikov19@gmail.com</div>
+                            <div style="font-size: 0.85em; opacity: 0.7;">Email</div>
+                        </div>
+                    </div>
+                    <div class="contact-item" onclick="copyToClipboard('@EE91191')">
+                        <span style="margin-right: 10px;">📲</span>
+                        <div>
+                            <div style="font-weight: 600;">@EE91191</div>
+                            <div style="font-size: 0.85em; opacity: 0.7;">Telegram</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <span style="margin-right: 10px;">🏠</span>
+                        <div>
+                            <div style="font-weight: 600;">СПб / Мурино</div>
+                            <div style="font-size: 0.85em; opacity: 0.7;">Удаленная работа</div>
+                        </div>
+                    </div>
+                    <button class="btn-download" onclick="downloadPDF()">
+                        <span>📥</span>
+                        Скачать PDF резюме
+                    </button>
+                </div>
+            </div>
+            
+            <div class="content-area">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">5+</div>
+                        <div class="metric-label">лет опыта</div>
+                        <div class="progress-ring">
+                            <svg width="60" height="60">
+                                <circle class="progress-ring-circle" stroke="rgba(255,255,255,0.3)" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/>
+                                <circle class="progress-ring-circle" stroke="white" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" stroke-dasharray="163.36" stroke-dashoffset="0"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">+85%</div>
+                        <div class="metric-label">рост заказов</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">+60%</div>
+                        <div class="metric-label">рост доходов</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">3</div>
+                        <div class="metric-label">человека в команде</div>
+                    </div>
+                </div>
+
+                <h3 class="section-title">Профессиональный профиль</h3>
+                <p style="line-height: 1.7; font-size: 1.1em; margin-bottom: 25px;">
+                    Senior менеджер маркетплейсов с 5+ годами успешного опыта. Специализация: полное ведение и масштабирование бизнеса на Wildberries, OZON, Яндекс.Маркет. 
+                    Переехал в Санкт-Петербург из Абакана, успешно работаю в удаленном формате. Доказанный опыт значительного роста ключевых показателей.
+                </p>
+
+                <div class="achievements-grid">
+                    <div class="achievement-card">
+                        <h4 style="color: var(--primary); margin-bottom: 15px;">🏆 Ключевые достижения</h4>
+                        <p style="margin: 10px 0;">• <strong>Рост заказов на 85%</strong> за 12 месяцев</p>
+                        <p style="margin: 10px 0;">• <strong>Увеличение доходов на 60%</strong> через оптимизацию</p>
+                        <p style="margin: 10px 0;">• <strong>Снижение возвратов на 30%</strong> за счет улучшения карточек</p>
+                        <p style="margin: 10px 0;">• <strong>Оптимизация расходов на 20%</strong> на логистике и рекламе</p>
+                    </div>
+                    <div class="achievement-card">
+                        <h4 style="color: var(--primary); margin-bottom: 15px;">🚀 Опыт работы</h4>
+                        <p style="margin: 10px 0;">• <strong>Руководство отделом</strong> из 3 специалистов</p>
+                        <p style="margin: 10px 0;">• <strong>Управление ассортиментом</strong> 1500+ SKU</p>
+                        <p style="margin: 10px 0;">• <strong>Работа с оборотами</strong> 80+ млн руб./год</p>
+                        <p style="margin: 10px 0;">• <strong>Удаленная работа</strong> с 2024 года (переезд в СПб)</p>
+                    </div>
+                </div>
+
+                <h3 class="section-title">Технические навыки</h3>
+                <div class="skill-bar">
+                    <div class="skill-name">
+                        <span>Wildberries</span>
+                        <span>96%</span>
+                    </div>
+                    <div class="skill-level">
+                        <div class="skill-progress" style="width: 96%"></div>
+                    </div>
+                </div>
+                <div class="skill-bar">
+                    <div class="skill-name">
+                        <span>OZON</span>
+                        <span>94%</span>
+                    </div>
+                    <div class="skill-level">
+                        <div class="skill-progress" style="width: 94%"></div>
+                    </div>
+                </div>
+                <div class="skill-bar">
+                    <div class="skill-name">
+                        <span>Яндекс.Маркет</span>
+                        <span>88%</span>
+                    </div>
+                    <div class="skill-level">
+                        <div class="skill-progress" style="width: 88%"></div>
+                    </div>
+                </div>
+                <div class="skill-bar">
+                    <div class="skill-name">
+                        <span>Аналитика данных</span>
+                        <span>92%</span>
+                    </div>
+                    <div class="skill-level">
+                        <div class="skill-progress" style="width: 92%"></div>
+                    </div>
+                </div>
+                <div class="skill-bar">
+                    <div class="skill-name">
+                        <span>Управление командой</span>
+                        <span>90%</span>
+                    </div>
+                    <div class="skill-level">
+                        <div class="skill-progress" style="width: 90%"></div>
+                    </div>
+                </div>
+
+                <h3 class="section-title" style="margin-top: 50px;">Опыт работы</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4 style="color: var(--primary); margin-bottom: 10px;">Руководитель отдела маркетплейсов</h4>
+                        <p style="color: var(--success); font-weight: 600; margin-bottom: 15px;">2023 - настоящее время | 2+ года</p>
+                        <p style="margin: 8px 0;">• Управление командой из 3 специалистов</p>
+                        <p style="margin: 8px 0;">• Рост заказов на 85% за 12 месяцев</p>
+                        <p style="margin: 8px 0;">• Увеличение доходов на 60% через оптимизацию процессов</p>
+                        <p style="margin: 8px 0;">• Работа с оборотом 80+ млн рублей ежегодно</p>
+                        <p style="margin: 8px 0;">• <strong>Удаленная работа</strong> с 2024 года (переезд в СПб)</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 style="color: var(--primary); margin-bottom: 10px;">Менеджер по маркетплейсам</h4>
+                        <p style="color: var(--success); font-weight: 600; margin-bottom: 15px;">2021 - 2023 | 2 года</p>
+                        <p style="margin: 8px 0;">• Запуск и масштабирование продаж на Wildberries и OZON</p>
+                        <p style="margin: 8px 0;">• Аналитика конкурентов и рынка</p>
+                        <p style="margin: 8px 0;">• Работа с карточками товаров и контентом</p>
+                        <p style="margin: 8px 0;">• Увеличение конверсии на 35%</p>
+                    </div>
+                    <div class="timeline-item">
+                        <h4 style="color: var(--primary); margin-bottom: 10px;">Специалист по e-commerce</h4>
+                        <p style="color: var(--success); font-weight: 600; margin-bottom: 15px;">2020 - 2021 | 1 год</p>
+                        <p style="margin: 8px 0;">• Начало карьеры в онлайн-продажах</p>
+                        <p style="margin: 8px 0;">• Изучение платформ маркетплейсов</p>
+                        <p style="margin: 8px 0;">• Поддержка текущих проектов</p>
+                        <p style="margin: 8px 0;">• Работа с первыми 200+ SKU</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация графика навыков
+        const ctx = document.getElementById('skillsChart').getContext('2d');
+        const skillsChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Wildberries', 'OZON', 'Яндекс.Маркет', 'Аналитика', 'Управление', 'Стратегия', 'Переговоры'],
+                datasets: [{
+                    label: 'Уровень экспертизы',
+                    data: [96, 94, 88, 92, 90, 85, 82],
+                    backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                    borderColor: 'rgba(37, 99, 235, 1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: 'rgba(37, 99, 235, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            stepSize: 20,
+                            backdropColor: 'transparent'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        angleLines: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Функция копирования в буфер обмена
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text.replace(/[^0-9@a-zA-Z.]/g, '')).then(() => {
+                const originalText = event.currentTarget.querySelector('div') ? 
+                    event.currentTarget.querySelector('div').innerText : event.currentTarget.innerText;
+                const temp = event.currentTarget.innerHTML;
+                event.currentTarget.innerHTML = '✅ Скопировано!';
+                setTimeout(() => {
+                    event.currentTarget.innerHTML = temp;
+                }, 1500);
+            });
+        }
+
+        // Анимация прогресс-баров
+        function animateSkills() {
+            const skillBars = document.querySelectorAll('.skill-progress');
+            skillBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 600);
+            });
+        }
+
+        // Функция скачивания PDF
+        function downloadPDF() {
+            window.print();
+        }
+
+        // Загрузка фото пользователя
+        function loadProfilePhoto() {
+            const photoUrl = prompt('Введите URL вашего фото для резюме:');
+            if (photoUrl) {
+                document.getElementById('profilePhoto').src = photoUrl;
+                document.getElementById('photoPlaceholder').style.display = 'none';
+            }
+        }
+
+        // Анимация круговых прогресс-баров
+        function animateProgressRings() {
+            const circles = document.querySelectorAll('.progress-ring-circle');
+            circles.forEach(circle => {
+                const radius = circle.r.baseVal.value;
+                const circumference = radius * 2 * Math.PI;
+                circle.style.strokeDasharray = `${circumference} ${circumference}`;
+                circle.style.strokeDashoffset = circumference;
+                
+                const offset = circumference - (100 / 100) * circumference;
+                setTimeout(() => {
+                    circle.style.transition = 'stroke-dashoffset 1.5s ease-in-out';
+                    circle.style.strokeDashoffset = offset;
+                }, 500);
+            });
+        }
+
+        // Запуск анимации при загрузке
+        window.addEventListener('load', function() {
+            animateSkills();
+            animateProgressRings();
+            // Автоматически спросим о фото через 2 секунды
+            setTimeout(loadProfilePhoto, 2000);
+        });
+
+        // Добавляем интерактивность метрикам
+        document.querySelectorAll('.metric-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Плавная прокрутка для якорей
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
